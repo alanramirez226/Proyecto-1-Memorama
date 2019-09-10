@@ -1,0 +1,195 @@
+Carta[] Cartas=new Carta[24];
+int time;
+int[] trackClicked=new int[100];
+int[] track=new int[100];
+boolean keep=false;
+int[] show=new int[24];
+
+
+void setup(){
+ 
+  time=0;
+  size(800, 600);
+  
+  int[] numberList= {
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+  };
+  
+  randomize(numberList);
+  for (int i=0; i<Cartas.length; i++)
+  {
+    Cartas[i]=new Carta(numberList[i]);
+    Cartas[i].v=false;
+    show[i]=0;
+  }
+  for (int i=0; i<100; i++)
+  {
+    trackClicked[i]=0;
+    track[i]=0;
+  }
+}
+
+void randomize(int[] a)
+{ 
+  int temp;
+  for (int i=0; i<a.length; i++)
+  {
+    int pick=(int)random(a.length);
+    temp=a[i];
+    a[i]=a[pick];
+    a[pick]=temp;
+  }
+}
+
+void draw(){
+  // colores de fondo carta etc.
+background(101,191,253);
+fill(118,204,132);
+noStroke();
+bezier(0, 600, -300, 400, 500, 200, 800, 600);
+stroke(82,152,68);
+fill(143,192,71);
+strokeWeight(1.8);
+bezier(0, 600, 500, 500, 1000, 200, 800, 600);
+
+
+
+  rectMode(CENTER);
+  int trueCartas=0;
+  for (int i=0; i<Cartas.length; i++)
+  {
+    if (Cartas[i].v==false)
+    {
+      stroke(0);
+      strokeWeight(2);
+      fill(4,138,209);
+      
+    }
+
+    // posicion y numero de cartas por fila
+    if (i<8)
+    {
+      Cartas[i].cx=85*(i+1)+20;
+      Cartas[i].cy=150;
+    } else if (i>=8&&i<16)
+    {
+      Cartas[i].cx=85*(i-6)-65;
+      Cartas[i].cy=290;
+    } else
+    {
+      Cartas[i].cx=85*(i-15)+20;
+      Cartas[i].cy=430;
+    }
+    
+    rect(Cartas[i].cx, Cartas[i].cy, Cartas[i].cw, Cartas[i].ch);
+
+    // si hago click en la carta
+    if (Cartas[i].v == true)
+    {
+
+      show[i]++;
+      imageMode(CENTER);
+      {
+        
+      //(Cartas[i].tileColor, Cartas[i].cx, Cartas[i].cy5);
+     } 
+    } else
+    {
+      show[i]=1;
+    }
+    fill(255);
+    
+    {
+      show[i]=2;
+    }
+    fill(255,0,0);
+    
+    if (Cartas[i].v == true)
+    {
+      trueCartas++;
+    }
+  }
+
+  if (time>1&&time%2!=0)
+  {
+    // voltear cartas si no coinciden
+    if ((track[time-3]!= track[time-2]))
+    {
+      Cartas[trackClicked[time-3]].v=false;
+      Cartas[trackClicked[time-2]].v=false;
+    }
+    //Cartas se quedan volteadas 
+    else
+    {
+      Cartas[trackClicked[time-3]].v=true;
+      Cartas[trackClicked[time-2]].v=true;
+    }
+  }
+  //Todas las cartas estan volteadas se termina la partida
+  if (trueCartas==Cartas.length)
+
+ {
+    gameOver();
+  }
+  
+  
+}
+boolean over;
+
+class Carta{
+  
+boolean oc = false;
+boolean B = false;
+boolean v;
+int cx;
+int cy;
+int cw = 70;    
+int ch = 120;
+int n;
+PImage tileColor;
+
+  
+Carta(int colorNumber )
+{
+  v = false;
+  cw=70;
+  ch=120;
+  n=colorNumber;
+  
+ }
+ 
+    
+}
+
+void mouseClicked()
+{
+
+  for (int i=0; i<Cartas.length; i++)
+  {//Cuando el mouse presiona una carta
+    if (mouseX<=Cartas[i].cx+Cartas[i].cw/2&&mouseX>=Cartas[i].cx-Cartas[i].cw/2&&mouseY>=Cartas[i].cy-Cartas[i].ch/2&&mouseY<=Cartas[i].cy+Cartas[i].ch/2&&Cartas[i].v==false)
+    {
+      Cartas[i].v=true;
+
+      time++;
+      track[time-1]=Cartas[i].n;
+      trackClicked[time-1]=i;
+    }
+  }
+  //Reiniciar partida
+  if (over==true)
+  {
+    
+    setup();
+    over=false;
+  }
+}
+
+void gameOver()
+{
+
+  fill(255);
+  textSize(50);
+  text("¡GANASTE!", 530, 560);
+  over=true;
+}
